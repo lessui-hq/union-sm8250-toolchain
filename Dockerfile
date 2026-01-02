@@ -21,12 +21,12 @@ RUN apt -y update && apt -y install \
 	wget \
   && rm -rf /var/lib/apt/lists/*
 
-# Download and extract LessOS RK3566 toolchain
+# Download and extract LessOS SM8250 toolchain
 WORKDIR /opt
-RUN wget https://github.com/lessui-hq/union-rk3566-toolchain/releases/download/lessos-toolchain-0.1/lessos-toolchain-RK3566.tar.gz && \
-    tar xzf lessos-toolchain-RK3566.tar.gz && \
-    mv build.LessOS-RK3566.aarch64/toolchain . && \
-    rm -rf build.LessOS-RK3566.aarch64 lessos-toolchain-RK3566.tar.gz && \
+RUN wget https://github.com/lessui-hq/union-sm8250-toolchain/releases/download/lessos-toolchain-0.1/lessos-toolchain-SM8250.tar.gz && \
+    tar xzf lessos-toolchain-SM8250.tar.gz && \
+    mv build.LessOS-SM8250.aarch64/toolchain . && \
+    rm -rf build.LessOS-SM8250.aarch64 lessos-toolchain-SM8250.tar.gz && \
     # Replace ccache wrapper scripts with direct symlinks to real binaries
     for f in /opt/toolchain/bin/aarch64-rocknix-linux-gnu-*; do \
         if [ -f "$f" ] && head -1 "$f" 2>/dev/null | grep -q '^#!/bin/sh'; then \
@@ -39,8 +39,8 @@ RUN wget https://github.com/lessui-hq/union-rk3566-toolchain/releases/download/l
     # Fix all symlinks with hardcoded build paths
     find /opt/toolchain -type l | while read link; do \
         target=$(readlink "$link"); \
-        if echo "$target" | grep -q "/home/nchapman/Code/LessOS/build.LessOS-RK3566.aarch64/toolchain"; then \
-            new_target=$(echo "$target" | sed 's|/home/nchapman/Code/LessOS/build.LessOS-RK3566.aarch64/toolchain|/opt/toolchain|g'); \
+        if echo "$target" | grep -q "/home/nchapman/Code/LessOS/build.LessOS-SM8250.aarch64/toolchain"; then \
+            new_target=$(echo "$target" | sed 's|/home/nchapman/Code/LessOS/build.LessOS-SM8250.aarch64/toolchain|/opt/toolchain|g'); \
             rm "$link" && ln -s "$new_target" "$link"; \
         fi; \
     done && \
@@ -58,7 +58,7 @@ ENV LD_LIBRARY_PATH="/opt/toolchain/x86_64-linux-gnu/aarch64-rocknix-linux-gnu/l
 ENV CROSS_COMPILE=/opt/toolchain/bin/aarch64-rocknix-linux-gnu-
 ENV SYSROOT=/opt/toolchain/aarch64-rocknix-linux-gnu/sysroot
 ENV PREFIX=/opt/toolchain/aarch64-rocknix-linux-gnu/sysroot/usr
-ENV UNION_PLATFORM=rk3566
+ENV UNION_PLATFORM=sm8250
 
 # pkg-config for cross-compilation (finds SDL2, librga, etc.)
 ENV PKG_CONFIG_PATH=/opt/toolchain/aarch64-rocknix-linux-gnu/sysroot/usr/lib/pkgconfig
